@@ -1,0 +1,47 @@
+################################################################
+####################### ESCENARIO1 #############################
+################################################################
+
+Cliente:
+git clone https://github.com/miguecrty/escenario1
+cd /escenario1/cliente
+podman build -t python-cliente .
+podman run -d --network=host --name cliente python-cliente sleep infinity
+podman volume create portainer_data
+podman run -d -p 8001:8001 -p 9443:9443 --name=portainer-servidor --restart=always -v /run/podman/podman.sock:/var/run/docker.sock -v portainer_data:/data docker.io/portainer/portainer-ce:latest
+
+Servidor:
+git clone https://github.com/miguecrty/escenario1
+cd /escenario1/servidor
+podman build -t python-servidor .
+podman run -d --network=host --name server python-servidor sleep infinity
+podman volume create portainer_data
+podman run -d -p 8001:8001 -p 9443:9443 --name=portainer-servidor --restart=always -v /run/podman/podman.sock:/var/run/docker.sock -v portainer_data:/data docker.io/portainer/portainer-ce:latest
+
+
+
+################################################################
+####################### ESCENARIO2 #############################
+################################################################
+
+mv1 (nginx):
+podman build -t nginx-escenario2 .
+podman run -d --name nginx --network=host nginx-escenario2
+podman run -d   -p 9001:9001   --name portainer_cliente   --restart=always   -v /run/podman/podman.sock:/var/run/docker.sock   -v /var/lib/containers/storage/volumes:/var/lib/docker/volumes   docker.io/portainer/agent:2.19.1
+
+mv2 (node):
+podman build -t node-escenario2 .
+podman run -d --name node --network=host node-escenario2
+podman run -d   -p 9001:9001   --name portainer_cliente   --restart=always   -v /run/podman/podman.sock:/var/run/docker.sock   -v /var/lib/containers/storage/volumes:/var/lib/docker/volumes   docker.io/portainer/agent:2.19.1
+
+mv3 (bbdd) :
+podman volume create postgresql
+podman run --name postgresql -e POSTGRES_PASSWORD=clave -d --network=host -v postgresql:/var/lib/postgresql/data -v  ./init.sql:/docker-entrypoint-initdb.d/init.sql  postgres
+cp postgresql.conf /var/lib/containers/storage/volumes/postgresql/_data/postgresql.conf
+podman restart postgresql
+podman run -d   -p 9001:9001   --name portainer_cliente   --restart=always   -v /run/podman/podman.sock:/var/run/docker.sock   -v /var/lib/containers/storage/volumes:/var/lib/docker/volumes   docker.io/portainer/agent:2.19.1
+
+mv4 (gestor):
+podman volume create portainer_data
+podman run -d -p 8001:8001 -p 9443:9443 --name=portainer-servidor --restart=always -v /run/podman/podman.sock:/var/run/docker.sock -v portainer_data:/data docker.io/portainer/portainer-ce:latest
+

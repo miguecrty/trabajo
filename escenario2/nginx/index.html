@@ -75,7 +75,7 @@
         // Función para cargar la lista de datos
         function cargarLista() {
             // Hacer la solicitud al servidor
-            fetch('http://10.0.0.2:3000/lista')
+            fetch('http://172.16.17.6:3000/lista')
                 .then(response => {
                     return response.json();
                 })
@@ -108,7 +108,7 @@ alert('No hay conexión con la base de datos/servidor');
             var tabla = document.getElementById("tablaDatos").getElementsByTagName('tbody')[0];
            
 	    // Hacer la solicitud al servidor
-            fetch('http://10.0.0.2:3000/borrar')
+            fetch('http://172.16.17.6:3000/borrar')
                 .then(response => {
 					tabla.innerHTML = '';
 					alert('Borrando tabla...')
@@ -131,7 +131,7 @@ alert('No hay conexión con la base de datos/servidor');
     if (!isNaN(parsedEdad) && parsedEdad > 0 && parsedEdad < 100) {
         if (nombre != "") {
             // Hacer la solicitud al servidor
-            fetch('http://10.0.0.2:3000/api?nombre=' + nombre + '&edad=' + edad)
+            fetch('http://172.16.17.6:3000/api?nombre=' + nombre + '&edad=' + edad)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Error al insertar datos');
